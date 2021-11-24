@@ -1,0 +1,190 @@
+UC- 1
+mysql> CREATE DATABASE payroll_services;
+
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| ankidb             |
+| ankireddy          |
+| information_schema |
+| mysql              |
+| payroll_services   |
+| performance_schema |
+| sys                |
++--------------------+
+
+mysql> SELECT DATABASE();
++------------------+
+| DATABASE()       |
++------------------+
+| payroll_services |
++------------------+
+
+mysql>  CREATE TABLE employee_payroll             #Create Table
+    -> (
+    ->  id             INT unsigned NOT NULL AUTO_INCREMENT,  #unique ID for the record
+    -> name            VARCHAR(150) NOT NULL,                 #Name of the Employee
+    -> salary          Double NOT NULL,                       #Employee Salary
+    -> start           DATE NOT NULL,                         #Employee Start Date
+    -> PRIMARY KEY     (id)                                   #Make id primary key
+    -> );
+
+UC -2
+mysql> DESCRIBE employee_payroll;
++--------+--------------+------+-----+---------+----------------+
+| Field  | Type         | Null | Key | Default | Extra          |
++--------+--------------+------+-----+---------+----------------+
+| id     | int unsigned | NO   | PRI | NULL    | auto_increment |
+| name   | varchar(150) | NO   |     | NULL    |                |
+| salary | double       | NO   |     | NULL    |                |
+| start  | date         | NO   |     | NULL    |                |
++--------+--------------+------+-----+---------+----------------+
+
+UC -3
+mysql> INSERT INTO employee_payroll ( name, salary, start) VALUES
+    ->  ('Ankit', 100000.00,'2018-01-03' ),
+    ->  ('Reddy', 150000.00,'2019-01-03' ),
+    ->  ('AnkiReddy', 250000.00,'2020-01-03' );
+
+UC -4
+mysql> SELECT * FROM employee_payroll;
++----+-----------+--------+------------+
+| id | name      | salary | start      |
++----+-----------+--------+------------+
+|  1 | Ankit     | 100000 | 2018-01-03 |
+|  2 | Reddy     | 150000 | 2019-01-03 |
+|  3 | AnkiReddy | 250000 | 2020-01-03 |
++----+-----------+--------+------------+
+
+UC -5
+
+mysql> SELECT * FROM employee_payroll
+    -> WHERE start BETWEEN CAST('2018-01-01' AS DATE) AND DATE(NOW());
++----+-----------+--------+------------+
+| id | name      | salary | start      |
++----+-----------+--------+------------+
+|  1 | Ankit     | 100000 | 2018-01-03 |
+|  2 | Reddy     | 150000 | 2019-01-03 |
+|  3 | AnkiReddy | 250000 | 2020-01-03 |
++----+-----------+--------+------------+
+
+
+mysql> SELECT * FROM employee_payroll
+    -> WHERE start BETWEEN CAST('2019-01-01' AS DATE) AND DATE(NOW());
++----+-----------+--------+------------+
+| id | name      | salary | start      |
++----+-----------+--------+------------+
+|  2 | Reddy     | 150000 | 2019-01-03 |
+|  3 | AnkiReddy | 250000 | 2020-01-03 |
++----+-----------+--------+------------+
+
+
+
+UC -6
+
+mysql> ALTER TABLE employee_payroll ADD gender CHAR(1) AFTER name;
+
+
+mysql> describe employee_payroll;
++--------+--------------+------+-----+---------+----------------+
+| Field  | Type         | Null | Key | Default | Extra          |
++--------+--------------+------+-----+---------+----------------+
+| id     | int unsigned | NO   | PRI | NULL    | auto_increment |
+| name   | varchar(150) | NO   |     | NULL    |                |
+| gender | char(1)      | YES  |     | NULL    |                |
+| salary | double       | NO   |     | NULL    |                |
+| start  | date         | NO   |     | NULL    |                |
++--------+--------------+------+-----+---------+----------------+
+
+
+mysql> update employee_payroll set gender = 'M' where name = 'Ankit';
+
+
+mysql> SELECT * FROM employee_payroll;
++----+-----------+--------+--------+------------+
+| id | name      | gender | salary | start      |
++----+-----------+--------+--------+------------+
+|  1 | Ankit     | M      | 100000 | 2018-01-03 |
+|  2 | Reddy     | NULL   | 150000 | 2019-01-03 |
+|  3 | AnkiReddy | NULL   | 250000 | 2020-01-03 |
++----+-----------+--------+--------+------------+
+
+
+mysql> update employee_payroll set gender = 'M' where name = 'Reddy' or name ='AnkiReddy';
+
+
+mysql> SELECT * FROM employee_payroll;
++----+-----------+--------+--------+------------+
+| id | name      | gender | salary | start      |
++----+-----------+--------+--------+------------+
+|  1 | Ankit     | M      | 100000 | 2018-01-03 |
+|  2 | Reddy     | M      | 150000 | 2019-01-03 |
+|  3 | AnkiReddy | M      | 250000 | 2020-01-03 |
++----+-----------+--------+--------+------------+
+
+
+mysql> update employee_payroll set salary = 250000.00 where name = 'Reddy';
+
+
+mysql> SELECT * FROM employee_payroll;
++----+-----------+--------+--------+------------+
+| id | name      | gender | salary | start      |
++----+-----------+--------+--------+------------+
+|  1 | Ankit     | M      | 100000 | 2018-01-03 |
+|  2 | Reddy     | M      | 250000 | 2019-01-03 |
+|  3 | AnkiReddy | M      | 250000 | 2020-01-03 |
++----+-----------+--------+--------+------------+
+
+
+UC -7
+ 
+mysql> SELECT AVG(salary) FROM employee_payroll WHERE gender = 'M' GROUP BY gender;
++-------------+
+| AVG(salary) |
++-------------+
+|      200000 |
++-------------+
+
+
+mysql> SELECT AVG(salary) FROM employee_payroll GROUP BY gender;
++-------------+
+| AVG(salary) |
++-------------+
+|      200000 |
++-------------+
+
+mysql> SELECT gender, AVG(salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | AVG(salary) |
++--------+-------------+
+| M      |      200000 |
++--------+-------------+
+
+
+mysql> SELECT gender, SUM(salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | SUM(salary) |
++--------+-------------+
+| M      |      600000 |
++--------+-------------+
+
+
+mysql> SELECT gender, MIN(salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | MIN(salary) |
++--------+-------------+
+| M      |      100000 |
++--------+-------------+
+
+
+mysql> SELECT gender, MAX(salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | MAX(salary) |
++--------+-------------+
+| M      |      250000 |
++--------+-------------+
+
+
+
